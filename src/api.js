@@ -1,13 +1,20 @@
 // src/api.js
 import axios from "axios";
 
-// ✅ Single global Axios instance
-const API =  import.meta.env.VITE_API_BASE || "http://localhost:4000/api",
+// ✅ Base URL setup
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
+
+// ✅ Create an Axios instance
+const API = axios.create({
+  baseURL: `${API_BASE}/api`,
   timeout: 15000,
+  withCredentials: true,
+});
 
 // ✅ Attach token automatically (if present)
 API.interceptors.request.use((req) => {
-  const token = localStorage.getItem("token") || localStorage.getItem("studentToken");
+  const token =
+    localStorage.getItem("token") || localStorage.getItem("studentToken");
   if (token) req.headers.Authorization = `Bearer ${token}`;
   return req;
 });
