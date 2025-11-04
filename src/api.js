@@ -6,7 +6,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
 
 // ✅ Create an Axios instance
 const API = axios.create({
-  baseURL: `${API_BASE}/api`,
+  baseURL: API_BASE
   timeout: 15000,
   withCredentials: true,
 });
