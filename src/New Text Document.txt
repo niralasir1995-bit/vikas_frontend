@@ -1,0 +1,467 @@
+/*
+Vikas Education Hub — Modern Trandy React Single-File App
+
+How to use:
+1) Put this file in your frontend `src/` folder as `App.jsx` (or copy components into your project structure).
+2) Install dependencies:
+   npm install react-router-dom
+   npm install -D tailwindcss postcss autoprefixer
+   npx tailwindcss init -p
+3) tailwind.config.js -> set content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"]
+4) In src/index.css add:
+   @tailwind base;
+   @tailwind components;
+   @tailwind utilities;
+5) Import index.css in your main entry (main.jsx).
+6) Replace asset paths (/assets/...) with your images inside public or src/assets.
+
+This single-file App.jsx contains:
+- Navbar (top-right links)
+- Footer
+- Pages: Home, Notifications, StudyMaterials, Gallery, Services, Achievers, AboutUs, ContactUs, Login
+- Simple mock data and UI placeholders ready for backend hookup
+
+Note: This is a starting template — connect API endpoints (axios/fetch) in useEffect hooks where comments indicate.
+*/
+
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
+
+/* ---------- Navbar ---------- */
+function Navbar() {
+  return (
+    <header className="w-full fixed top-0 left-0 bg-white/80 backdrop-blur-md shadow-sm z-40">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">VE</div>
+          <div>
+            <div className="text-lg font-extrabold text-gray-800">Vikas Education Hub</div>
+            <div className="text-xs text-gray-500">Learn • Grow • Succeed</div>
+          </div>
+        </div>
+
+        <nav className="hidden md:flex items-center gap-4 text-sm font-medium text-gray-700">
+          <Link className="hover:text-indigo-600" to="/">Home</Link>
+          <Link className="hover:text-indigo-600" to="/notifications">Notification</Link>
+          <Link className="hover:text-indigo-600" to="/study-materials">Study Materials</Link>
+          <Link className="hover:text-indigo-600" to="/gallery">Gallery</Link>
+          <Link className="hover:text-indigo-600" to="/services">Our Services</Link>
+          <Link className="hover:text-indigo-600" to="/achievers">Achievers</Link>
+          <Link className="hover:text-indigo-600" to="/about">About Us</Link>
+          <Link className="hover:text-indigo-600" to="/contact">Contact Us</Link>
+          <Link className="bg-indigo-600 text-white px-3 py-1 rounded-md hover:opacity-95" to="/login">Login</Link>
+        </nav>
+
+        <MobileMenu />
+      </div>
+    </header>
+  );
+}
+
+/* ---------- Mobile Menu (small screens) ---------- */
+function MobileMenu() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="md:hidden">
+      <button onClick={() => setOpen(!open)} className="p-2 rounded-md bg-gray-100">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={open ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute right-4 mt-2 w-48 bg-white rounded-lg shadow-md p-3 text-sm">
+          <MobileLink to="/">Home</MobileLink>
+          <MobileLink to="/notifications">Notification</MobileLink>
+          <MobileLink to="/study-materials">Study Materials</MobileLink>
+          <MobileLink to="/gallery">Gallery</MobileLink>
+          <MobileLink to="/services">Our Services</MobileLink>
+          <MobileLink to="/achievers">Achievers</MobileLink>
+          <MobileLink to="/about">About Us</MobileLink>
+          <MobileLink to="/contact">Contact Us</MobileLink>
+          <MobileLink to="/login" className="bg-indigo-600 text-white rounded-md px-3 py-1 inline-block mt-2">Login</MobileLink>
+        </div>
+      )}
+    </div>
+  );
+}
+function MobileLink({ to, children, className = "" }){
+  return (
+    <Link to={to} className={`block py-2 hover:text-indigo-600 ${className}`}>{children}</Link>
+  )
+}
+
+/* ---------- Footer ---------- */
+function Footer(){
+  return (
+    <footer className="bg-gradient-to-r from-indigo-50 to-purple-50 mt-12 py-8">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <h4 className="font-bold text-lg">Vikas Education Hub</h4>
+          <p className="text-sm text-gray-600 mt-2">Address: 123 Education Lane, City — 110001</p>
+          <p className="text-sm text-gray-600">Phone: +91-9876543210</p>
+          <p className="text-sm text-gray-600">Email: info@vikaseduhub.com</p>
+        </div>
+        <div>
+          <h5 className="font-semibold">Quick Links</h5>
+          <ul className="mt-3 text-sm text-gray-600 space-y-2">
+            <li>Home</li>
+            <li>Study Materials</li>
+            <li>Gallery</li>
+            <li>Contact Us</li>
+          </ul>
+        </div>
+        <div>
+          <h5 className="font-semibold">Follow Us</h5>
+          <div className="flex gap-3 mt-3">
+            <div className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center">f</div>
+            <div className="w-9 h-9 rounded-full bg-pink-600 text-white flex items-center justify-center">in</div>
+            <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center">t</div>
+          </div>
+        </div>
+      </div>
+      <div className="text-center text-xs text-gray-500 mt-6">© {new Date().getFullYear()} Vikas Education Hub — All rights reserved.</div>
+    </footer>
+  )
+}
+
+/* ---------- Home Page ---------- */
+function Home(){
+  return (
+    <div className="pt-24">
+      {/* Hero */}
+      <section className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 items-center gap-8">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">Learn with <span className="text-indigo-600">Vikas Education Hub</span></h1>
+          <p className="mt-4 text-gray-600 max-w-xl">Modern courses, dedicated teachers and resources to help students succeed. Join thousands of learners building bright futures.</p>
+          <div className="mt-6 flex gap-3">
+            <Link to="/study-materials" className="bg-indigo-600 text-white px-4 py-2 rounded-md">Study Materials</Link>
+            <Link to="/services" className="border border-indigo-600 text-indigo-600 px-4 py-2 rounded-md">Our Services</Link>
+          </div>
+
+          <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <StatBox number={1200} label="Students" />
+            <StatBox number={45} label="Teachers" />
+            <StatBox number={320} label="Courses" />
+            <StatBox number={98} label="Achievers" />
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="rounded-2xl overflow-hidden shadow-xl">
+            <img src="/assets/hero.jpg" alt="hero" className="w-full h-80 object-cover" />
+          </div>
+          <div className="absolute -bottom-6 left-6 bg-white p-4 rounded-xl shadow-lg w-11/12">
+            <div className="font-semibold">Upcoming: Free Career Counseling</div>
+            <div className="text-xs text-gray-500">Register for the webinar on 15 Nov</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Photo grid + info */}
+      <section className="max-w-7xl mx-auto px-6 py-12">
+        <h3 className="text-2xl font-bold mb-6">Explore Our Campus & Activities</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="rounded-xl overflow-hidden shadow-md">
+            <img src="/assets/photo1.jpg" alt="photo1" className="w-full h-48 object-cover" />
+            <div className="p-4">
+              <h4 className="font-semibold">Interactive Labs</h4>
+              <p className="text-sm text-gray-500 mt-1">Modern lab facilities for practical learning.</p>
+            </div>
+          </div>
+
+          <div className="rounded-xl overflow-hidden shadow-md">
+            <img src="/assets/photo2.jpg" alt="photo2" className="w-full h-48 object-cover" />
+            <div className="p-4">
+              <h4 className="font-semibold">Sports & Events</h4>
+              <p className="text-sm text-gray-500 mt-1">Regular events keep students engaged.</p>
+            </div>
+          </div>
+
+          <div className="rounded-xl overflow-hidden shadow-md">
+            <img src="/assets/photo3.jpg" alt="photo3" className="w-full h-48 object-cover" />
+            <div className="p-4">
+              <h4 className="font-semibold">Library & Resources</h4>
+              <p className="text-sm text-gray-500 mt-1">Large collection of books & digital materials.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  )
+}
+
+function StatBox({number, label}){
+  return (
+    <div className="bg-white p-4 rounded-xl shadow-sm text-center">
+      <div className="text-xl font-bold text-indigo-600">{number}</div>
+      <div className="text-sm text-gray-500">{label}</div>
+    </div>
+  )
+}
+
+/* ---------- Notifications Page (scrollable feed) ---------- */
+function Notifications(){
+  const [notes, setNotes] = useState([]);
+
+  useEffect(() => {
+    // TODO: replace this with API call: GET /api/notifications
+    setNotes([
+      {id:1, title: "Job: Math Teacher", text: "Part-time Math teacher required. Apply by 10 Nov."},
+      {id:2, title: "Exam Schedule", text: "Term 1 exam schedule released. Check notices."},
+      {id:3, title: "Workshop", text: "Free workshop on competitive exams on 25 Nov."}
+    ])
+  }, [])
+
+  return (
+    <div className="pt-24 max-w-4xl mx-auto px-6 py-10">
+      <h2 className="text-2xl font-bold mb-4">Notifications</h2>
+      <p className="text-sm text-gray-500 mb-6">Latest job posts and important updates. (Admin can add new ones from dashboard.)</p>
+
+      <div className="space-y-4">
+        {notes.map(n => (
+          <div key={n.id} className="p-4 border rounded-lg hover:shadow-md transition bg-white">
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="font-semibold">{n.title}</div>
+                <div className="text-sm text-gray-600 mt-1">{n.text}</div>
+              </div>
+              <div className="text-xs text-gray-400">Nov 1, 2025</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Study Materials Page ---------- */
+function StudyMaterials(){
+  const [materials, setMaterials] = useState([]);
+  useEffect(() => {
+    // TODO: GET /api/materials
+    setMaterials([
+      {id:1, type: 'pdf', title: 'Physics Notes - Class 12', url: '/assets/sample.pdf'},
+      {id:2, type: 'video', title: 'Chemistry Lecture - Organic', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'},
+      {id:3, type: 'link', title: 'Math Practice Site', url: 'https://example.com'}
+    ])
+  }, [])
+
+  return (
+    <div className="pt-24 max-w-5xl mx-auto px-6 py-10">
+      <h2 className="text-2xl font-bold mb-4">Study Materials</h2>
+      <p className="text-sm text-gray-500 mb-6">PDFs, Videos & useful links uploaded by admin.</p>
+
+      <div className="space-y-3">
+        {materials.map(m => (
+          <div key={m.id} className="p-4 bg-white rounded-lg shadow-sm flex items-center justify-between">
+            <div>
+              <div className="font-medium">{m.title}</div>
+              <div className="text-xs text-gray-500">{m.type.toUpperCase()}</div>
+            </div>
+            <div>
+              {m.type === 'pdf' && <a href={m.url} target="_blank" rel="noreferrer" className="text-indigo-600">View / Download</a>}
+              {m.type === 'video' && <a href={m.url} target="_blank" rel="noreferrer" className="text-indigo-600">Watch</a>}
+              {m.type === 'link' && <a href={m.url} target="_blank" rel="noreferrer" className="text-indigo-600">Open Link</a>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Gallery Page ---------- */
+function Gallery(){
+  const [albums, setAlbums] = useState([]);
+  useEffect(() =>{
+    // TODO: GET /api/gallery-albums
+    setAlbums([
+      {id:1, title: "Teachers Day 2019", cover: '/assets/photo1.jpg', images: ['/assets/photo1.jpg','/assets/photo2.jpg']},
+      {id:2, title: "Annual Day 2021", cover: '/assets/photo2.jpg', images: ['/assets/photo3.jpg','/assets/photo1.jpg']}
+    ])
+  }, [])
+
+  return (
+    <div className="pt-24 max-w-6xl mx-auto px-6 py-10">
+      <h2 className="text-2xl font-bold mb-4">Gallery</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {albums.map(a => (
+          <AlbumCard key={a.id} album={a} />
+        ))}
+      </div>
+    </div>
+  )
+}
+function AlbumCard({album}){
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="bg-white rounded-lg overflow-hidden shadow-md">
+      <img src={album.cover} alt={album.title} className="w-full h-40 object-cover" />
+      <div className="p-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <div className="font-semibold">{album.title}</div>
+            <div className="text-sm text-gray-500">{album.images.length} photos</div>
+          </div>
+          <button onClick={() => setOpen(true)} className="text-indigo-600 text-sm">Open</button>
+        </div>
+      </div>
+
+      {open && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-11/12 max-w-3xl p-4">
+            <div className="flex justify-between items-center mb-3">
+              <div className="font-semibold">{album.title}</div>
+              <button onClick={() => setOpen(false)} className="text-gray-500">Close</button>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {album.images.map((img, i) => (
+                <img key={i} src={img} alt={i} className="w-full h-40 object-cover rounded" />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ---------- Services ---------- */
+function Services(){
+  const services = [
+    {id:1, title:'Online Classes', desc:'Live classes for board & competitive exams.'},
+    {id:2, title:'Career Counselling', desc:'One-on-one counselling sessions.'},
+    {id:3, title:'Scholarship Guidance', desc:'Help with scholarship applications.'}
+  ]
+  return (
+    <div className="pt-24 max-w-4xl mx-auto px-6 py-10">
+      <h2 className="text-2xl font-bold mb-4">Our Services</h2>
+      <div className="space-y-4">
+        {services.map(s => (
+          <details key={s.id} className="p-4 bg-white rounded shadow-sm">
+            <summary className="font-medium cursor-pointer">{s.title}</summary>
+            <div className="mt-2 text-sm text-gray-600">{s.desc}</div>
+          </details>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Achievers ---------- */
+function Achievers(){
+  const data = [
+    {id:1, name:'Anita Sharma', rank:'1', cls:'12', year:2024, photo:'/assets/achiever1.jpg'},
+    {id:2, name:'Rahul Verma', rank:'2', cls:'12', year:2024, photo:'/assets/achiever2.jpg'},
+  ]
+  return (
+    <div className="pt-24 max-w-6xl mx-auto px-6 py-10">
+      <h2 className="text-2xl font-bold mb-4">Achievers</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {data.map(d => (
+          <div key={d.id} className="bg-white rounded-lg p-4 text-center shadow-sm">
+            <img src={d.photo} alt={d.name} className="w-28 h-28 object-cover rounded-full mx-auto" />
+            <div className="mt-3 font-semibold">{d.name}</div>
+            <div className="text-sm text-gray-500">Rank {d.rank} — Class {d.cls} ({d.year})</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- About Us ---------- */
+function About(){
+  return (
+    <div className="pt-24 max-w-4xl mx-auto px-6 py-10">
+      <h2 className="text-2xl font-bold mb-4">About Us</h2>
+      <p className="text-gray-600">Vikas Education Hub is dedicated to delivering quality education and guidance to students across streams. Our mission is to empower each learner with knowledge, skills and confidence to achieve their goals.</p>
+
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <h4 className="font-semibold">Vision</h4>
+          <p className="text-sm text-gray-500 mt-2">To create a community of lifelong learners who succeed personally and professionally.</p>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <h4 className="font-semibold">Mission</h4>
+          <p className="text-sm text-gray-500 mt-2">Provide affordable, high-quality resources and expert guidance to every student.</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Contact Us ---------- */
+function Contact(){
+  const [form, setForm] = useState({name:'', email:'', message:''});
+  const submit = (e) => { e.preventDefault();
+    // TODO: POST /api/contact
+    alert('Message sent (demo)');
+    setForm({name:'', email:'', message:''});
+  }
+  return (
+    <div className="pt-24 max-w-3xl mx-auto px-6 py-10">
+      <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
+      <form onSubmit={submit} className="space-y-4">
+        <input value={form.name} onChange={e=>setForm({...form, name:e.target.value})} placeholder="Your name" className="w-full p-3 border rounded" />
+        <input value={form.email} onChange={e=>setForm({...form, email:e.target.value})} placeholder="Your email" className="w-full p-3 border rounded" />
+        <textarea value={form.message} onChange={e=>setForm({...form, message:e.target.value})} placeholder="Your message" className="w-full p-3 border rounded" rows={5} />
+        <button className="bg-indigo-600 text-white px-4 py-2 rounded">Send Message</button>
+      </form>
+
+      <div className="mt-6 text-sm text-gray-500">
+        <div>Address: 123 Education Lane, City — 110001</div>
+        <div>Phone: +91-9876543210</div>
+        <div>Email: info@vikaseduhub.com</div>
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Login Page (simple) ---------- */
+function Login(){
+  const navigate = useNavigate();
+  const [form, setForm] = useState({email:'', password:''});
+  const submit = (e) => { e.preventDefault();
+    // TODO: POST /api/login -> handle token
+    alert('Logged in (demo)');
+    navigate('/');
+  }
+  return (
+    <div className="pt-24 max-w-md mx-auto px-6 py-10">
+      <h2 className="text-2xl font-bold mb-4">Login</h2>
+      <form onSubmit={submit} className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
+        <input value={form.email} onChange={e=>setForm({...form, email:e.target.value})} placeholder="Email" className="w-full p-3 border rounded" />
+        <input value={form.password} onChange={e=>setForm({...form, password:e.target.value})} placeholder="Password" type="password" className="w-full p-3 border rounded" />
+        <button className="bg-indigo-600 text-white px-4 py-2 rounded w-full">Login</button>
+      </form>
+    </div>
+  )
+}
+
+/* ---------- App (routes) ---------- */
+export default function App(){
+  return (
+    <BrowserRouter>
+      <div className="min-h-screen bg-gray-50 text-gray-800">
+        <Navbar />
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/study-materials" element={<StudyMaterials />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/achievers" element={<Achievers />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </BrowserRouter>
+  )
+}
