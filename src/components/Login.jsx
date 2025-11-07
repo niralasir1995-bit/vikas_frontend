@@ -37,7 +37,7 @@ function Login({ onLogin }) {
   let studentData = null;
   try {
     const res = await API.get(
-      `/api/students/${user._id}`,
+      `/students/${user._id}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     if (res.ok) studentData = await res.json();
